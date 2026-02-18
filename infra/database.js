@@ -7,6 +7,7 @@ async function getPostgresVersionNumberAsJson() {
     user: process.env.POSTGRES_USER,
     database: process.env.POSTGRES_DB,
     password: process.env.POSTGRES_PASSWORD,
+    ssl: process.env.NODE_ENV === "development" ? false : true,
   });
   try {
     await client.connect();
@@ -35,6 +36,7 @@ async function getPostgresMaxConnections() {
     user: process.env.POSTGRES_USER,
     database: process.env.POSTGRES_DB,
     password: process.env.POSTGRES_PASSWORD,
+    ssl: process.env.NODE_ENV === "development" ? false : true,
   });
   try {
     await client.connect();
@@ -59,6 +61,7 @@ async function getPostgresUsedConnections() {
     user: process.env.POSTGRES_USER,
     database: process.env.POSTGRES_DB,
     password: process.env.POSTGRES_PASSWORD,
+    ssl: process.env.NODE_ENV === "development" ? false : true,
   });
   try {
     await client.connect();
