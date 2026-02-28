@@ -1,5 +1,33 @@
 import { Client } from "pg";
 
+async function query(queryObject) {
+  let client;
+  try {
+    client = await getNewClient();
+    const result = await client.query(queryObject);
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  } finally {
+    await client.end();
+  }
+}
+
+async function getNewClient() {
+  const client = new Client({
+    host: process.env.POSTGRES_HOST,
+    port: process.env.POSTGRES_PORT,
+    user: process.env.POSTGRES_USER,
+    database: process.env.POSTGRES_DB,
+    password: process.env.POSTGRES_PASSWORD,
+    ssl: getSSLValues(),
+  });
+
+  await client.connect();
+  return client;
+}
+
 async function getPostgresVersionNumberAsJson() {
   const client = new Client({
     host: process.env.POSTGRES_HOST,
@@ -12,10 +40,8 @@ async function getPostgresVersionNumberAsJson() {
   try {
     await client.connect();
 
-    // Execute the query to get just the version number
     const queryResult = await client.query("SHOW server_version;");
 
-    // The result value is in the 'setting' field
     const versionNumber = queryResult.rows[0].server_version;
 
     console.log("\nPostgreSQL Version Number (JSON):");
@@ -84,6 +110,8 @@ async function getPostgresUsedConnections() {
 }
 
 module.exports = {
+  query,
+  getNewClient,
   getPostgresUsedConnections,
   getPostgresVersionNumberAsJson,
   getPostgresMaxConnections,
@@ -96,5 +124,5 @@ function getSSLValues() {
     };
   }
 
-  return process.env.NODE_ENV === "development" ? false : true;
+  return process.env.NODE_ENV === "production" ? true : false;
 }
