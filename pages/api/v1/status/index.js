@@ -13,9 +13,13 @@ async function status(request, response) {
   response.status(200).json({
     aespa_goated: aespa,
     updated_at: updatedAt,
-    postgres_version: postgresVersion,
-    max_connections: parseInt(maxConnections),
-    used_connections: usedConnections,
+    dependencies: {
+      database: {
+        postgres_version: postgresVersion,
+        max_connections: parseInt(maxConnections),
+        used_connections: usedConnections,
+      },
+    },
   });
 }
 
